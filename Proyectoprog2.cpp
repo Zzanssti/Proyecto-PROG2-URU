@@ -391,3 +391,208 @@ void mostrarListaEquipos(Equipo** equipos, int cantidad) {
     cout << "=======================================================" << endl;
     cout << " Total de equipos en el sistema: " << cantidad << endl;
 }
+
+//redimensionamiento de jugadores
+void redimensionarJugadores(SistemaDeportivo* s) {
+    int nuevaCapacidad = s->capacidadJugadores * 2;
+    Jugador* nuevoArray = new Jugador[nuevaCapacidad];
+  //copiamos las estructuras al nuevo bloque  
+    for (int i = 0; i < s->numJugadores; i++) {
+        nuevoArray[i] = s->jugadores[i];
+    }
+    
+    delete[] s->jugadores;//boramos
+    
+    s->jugadores = nuevoArray;//apuntamos al nuevo arreglo
+    s->capacidadJugadores = nuevaCapacidad;
+}
+
+Jugador* agregarJugador(SistemaDeportivo* s, int idEquipo, const char* nombre, const char* cedula, const char* posicion, int edad, int numeroDorsal) {
+    if (s == nullptr || nombre == nullptr || strlen(nombre) == 0) return nullptr;
+    
+    // Validamos que el equipo exista antes de agregar el jugador
+    Equipo* equipo = buscarEquipoPorID(s, idEquipo);
+    if (equipo == nullptr) {
+        return nullptr; // No se puede agregar un jugador a un equipo inexistente
+    }
+    //regla de negocio: evitar que un equipo tenga dos jugadores con el mismo numero de dorsal
+    for (int i=0; i < s->numJugadores; i++) {
+        //cedula unica
+        if (strcmp(s->jugadores[i].cedula, cedula) == 0) {
+            return nullptr; // Retorna nullptr si la cedula ya existe
+        }
+        //numero de dorsal unico por equipo
+        if (s->jugadores[i].idEquipo == idEquipo && s->jugadores[i].numeroDorsal == numeroDorsal) {
+            return nullptr; // Retorna nullptr si el numero de dorsal ya existe en el mismo equipo
+        }
+    }
+    //si el arreglo se llena, se duplica
+    if (s->numJugadores == s->capacidadJugadores) {
+        redimensionarJugadores(s);
+    }
+
+
+    int idx = s->numJugadores;
+    s->jugadores[idx].id = s->siguienteIdJugador++;
+    s->jugadores[idx].idEquipo = idEquipo;
+    strcpy(s->jugadores[idx].nombre, nombre);
+    strcpy(s->jugadores[idx].cedula, cedula);
+    strcpy(s->jugadores[idx].posicion, posicion);
+    s->jugadores[idx].edad = edad;
+    s->jugadores[idx].numeroDorsal = numeroDorsal;
+    strcpy(s->jugadores[idx].fechaRegistro, "2026-06-04");
+    s->numJugadores++;
+    return &(s->jugadores[idx]);
+}
+
+Jugador* buscarJugadorPorID(SistemaDeportivo* s, int id) {
+    for (int i = 0; i < s->numJugadores; i++) {
+        if (s->jugadores[i].id == id) {
+            return &(s->jugadores[i]);
+        }
+    }
+    return nullptr;
+}
+
+Jugador** listarJugadoresPorEquipo(SistemaDeportivo* s, int idequipo, int* cantidad){
+if(s == nullptr || s->numJugadores == 0) {
+    *cantidad = 0;
+    return nullptr;
+
+    //primero contamos cuantos jugadores hay en el 
+    int contador = 0;
+    for (int i = 0; i < s->numJugadores; i++) {
+        if (s->jugadores[i].idEquipo == idequipo) {
+            contador++;
+        }
+    }
+        *cantidad = contador;
+        if (contador == 0) {
+            return nullptr; // No hay jugadores para ese equipo
+        }
+        //creamos el array temporal de punteros
+        Jugador** arrayPunteros = new Jugador*[*cantidad];
+        int idxRef = 0;
+        for (int i = 0; i < s->numJugadores; i++) {
+            if (s->jugadores[i].idEquipo == idequipo) {
+                arrayPunteros[idxRef++] = &(s->jugadores[i]);
+            }
+        }
+        return arrayPunteros;
+
+    }
+}
+
+void menuRegistarJugador(SistemaDeportivo* s){
+    int idEquipo;
+    char nombre[100];
+    char cedula[20];
+    char posicion[20];
+    int edad;
+    int numeroDorsal;
+
+    cout << "\n--- REGISTRAR NUEVO JUGADOR ---" << endl;
+
+    // Validamos que el ID del equipo sea un entero válido
+    do {
+        cout << "Ingrese el ID del equipo al que pertenece el jugador: ";
+        cin >> idEquipo;
+        if (cin.fail() || idEquipo <= 0) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "[ERROR]: ID de equipo invalido. Debe ser un numero entero positivo." << endl;
+            idEquipo = -1; // Reiniciamos para el bucle
+        }
+    } while (idEquipo <= 0);
+
+    cin.ignore(); // Limpiamos el buffer después de leer el ID
+
+    // Validamos que el nombre solo contenga letras y espacios
+    do {
+        cout << "Ingrese el nombre del jugador (Solo letras): ";
+        cin.getline(nombre, 100);
+        if (strlen(nombre) == 0) {
+            cout << "[ERROR]: El campo no puede estar vacio." << endl;
+        } else if (!esTextoValido(nombre)) {
+            cout << "[ERROR]: El nombre no puede contener numeros ni caracteres especiales." << endl;
+        }
+    } while (strlen(nombre) == 0 || !esTextoValido(nombre));
+
+    // Validamos que la cedula solo contenga numeros y tenga una longitud razonable
+    do {
+        cout << "Ingrese la cedula del jugador (Solo numeros): ";
+        cin.getline(cedula, 20);
+        bool esValida = true;
+        for (int i = 0; cedula[i] != '\0'; i++) {
+            if (cedula[i] < '0' || cedula[i] > '9') {
+                esValida = false;
+                break;
+            }
+        }
+        if (strlen(cedula) == 0) {
+            cout << "[ERROR]: El campo no puede estar vacio." << endl;
+        } else if (!esValida) {
+            cout << "[ERROR]: La cedula solo puede contener numeros." << endl;
+        }
+    } while (strlen(cedula) == 0 || !esTextoValido(cedula));
+ // validar posiciom
+    int opcionPosicion = 0;
+    do {
+        cout << "Seleccione posicion:\n1. PORTERO\n2. DEFENSA\n3. MEDIOCAMPISTA\n4. DELANTERO\nOpcion: ";
+        cin >> opcionPosicion;
+        if(cin.fail() || opcionPosicion < 1 || opcionPosicion > 4) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "[ERROR]: Opcion invalida. Seleccione un numero entre 1 y 4." << endl;
+            opcionPosicion = 0; // Reiniciamos para el bucle
+        }
+    } while (opcionPosicion == 0);
+    cin.ignore(10000, '\n'); // Limpiamos el buffer después de leer la opción
+
+    if(opcionPosicion == 1) {
+        strcpy(posicion, "PORTERO");
+    } else if (opcionPosicion == 2) {
+        strcpy(posicion, "DEFENSA");
+    } else if (opcionPosicion == 3) {
+        strcpy(posicion, "MEDIOCAMPISTA");
+    } else if (opcionPosicion == 4) {
+        strcpy(posicion, "DELANTERO");
+    }
+    //validacion edad (edad logica y que sea un numero +)
+    do {
+        cout << "Ingrese la edad del jugador: ";
+        cin >> edad;
+        if (cin.fail() || edad <= 0 || edad > 100) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "[ERROR]: Edad invalida. Debe ser un numero entero positivo entre 1 y 100." << endl;
+            edad = 0; // Reiniciamos para el bucle
+        }
+    } while (edad == 0);
+    //validacion del dorsal (numero poscitivo y  el 0 al 100)
+    do{
+        cout << "Ingrese el numero de dorsal del jugador: ";
+        cin >> numeroDorsal;
+        if (cin.fail() || numeroDorsal < 1 || numeroDorsal > 99) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "[ERROR]: Numero de dorsal invalido. Debe ser un numero entero positivo entre 1 y 100." << endl;
+            numeroDorsal = 0; // Reiniciamos para el bucle
+        }
+    } while (numeroDorsal == 0);
+    cin.ignore(10000, '\n'); // Limpiamos el buffer después de leer el número de dorsal
+    // eviamos los datos limpios a la capa logica
+    Jugador* resultado = agregarJugador(s, idEquipo, nombre, cedula, posicion, edad, numeroDorsal);
+
+    if (resultado == nullptr) {
+        cout << "[ERROR]: No se pudo registrar el jugador. Verifique que el ID del equipo exista, que la cedula sea unica y que el numero de dorsal no se repita en el mismo equipo." << endl;
+    } else {
+        cout << "\n[SISTEMA]: Jugador guardado con exito " << endl;
+        cout << "ID: " << resultado->id << " | Nombre: " << resultado->nombre 
+             << " | Cedula: " << resultado->cedula << " | Posicion: " << resultado->posicion 
+             << " | Edad: " << resultado->edad << " | Dorsal: " << resultado->numeroDorsal 
+             << endl;
+    }
+}
+
+
