@@ -51,8 +51,12 @@ struct Partido {
 };
 
 struct SistemaDeportivo {
-    Torneo torneo;
+    Torneo torneo; // Instancia única con la configuración del torneo
     
+    // PUNTEROS A ARRAYS DINÁMICOS:
+    // Funcionan como el inicio del bloque de memoria reservada en el Heap.
+    // Permiten acceder a la colección de elementos mediante aritmética de punteros (s->equipos[i])
+
     Equipo* equipos;
     int numEquipos;
     int capacidadEquipos;
@@ -76,6 +80,9 @@ struct SistemaDeportivo {
 void inicializarSistema(SistemaDeportivo* s, Torneo torneo);
 void liberarSistema(SistemaDeportivo* s);
 
+// Utilizamos redimensionamiento dinámico (2x capacidad) para evitar límites estáticos. 
+// Es crucial el uso de delete[] para prevenir memory leaks (fugas de memoria) 
+// cada vez que el array se expande.
 void redimensionarEquipos(SistemaDeportivo* s);
 void redimensionarJugadores(SistemaDeportivo* s);
 void redimensionarPartidos(SistemaDeportivo* s);
@@ -86,7 +93,15 @@ Equipo* buscarEquipoPorID(SistemaDeportivo* s, int id);
 Equipo* buscarEquipoPorNombre(SistemaDeportivo* s, const char* nombre);
 Equipo** buscarEquiposPorNombreParcial(SistemaDeportivo* s, const char* subcadena, int* cantidad);
 bool actualizarEquipoLogica(SistemaDeportivo* s, int id, const char* nombre, const char* ciudad, const char* entrenador);
+// ALGORITMO DE ORDENAMIENTO (Bubble Sort):
+// Implementación seleccionada por su eficiencia en conjuntos de datos pequeños (n < 100) 
+// y facilidad de implementación in-place. La jerarquía (Puntos -> Dif. Goles -> GF) 
+// sigue los estándares deportivos internacionales para romper empates
 Equipo** listarEquipos(SistemaDeportivo* s, int* cantidad); // Incluye ordenamiento oficial
+// INTEGRIDAD REFERENCIAL: 
+// Al eliminar un equipo, el sistema asegura la consistencia de los datos 
+// desvinculando jugadores (agente libre) y validando partidos activos 
+// para evitar referencias huérfanas (dangling pointers/IDs inválidos).
 bool eliminarEquipoLogica(SistemaDeportivo* s, int idEquipo);
 
 Jugador* agregarJugador(SistemaDeportivo* s, int idEquipo, const char* nombre, const char* cedula, const char* posicion, int edad, int numeroDorsal);
@@ -343,6 +358,13 @@ Equipo** buscarEquiposPorNombreParcial(SistemaDeportivo* s, const char* subcaden
     return resultado;
 }
 
+/*
+ agregarEquipo
+    LÓGICA: 
+    1. Verifica si hay capacidad suficiente.
+    2. Si no, invoca redimensionarEquipos (gestión de memoria dinámica).
+    3. Utiliza aritmética de punteros para insertar el nuevo equipo en la dirección s->equipos[indice].
+ */
 Equipo* agregarEquipo(SistemaDeportivo* s, const char* nombre, const char* ciudad, const char* entrenador) {
     if (s == nullptr || nombre == nullptr || strlen(nombre) == 0) return nullptr;
     if (buscarEquipoPorNombre(s, nombre) != nullptr) return nullptr; // Validación de duplicados (CU 6)
@@ -618,6 +640,9 @@ Partido* buscarPartidoPorID(SistemaDeportivo* s, int id) {
     return nullptr;
 }
 
+// Esta función pertenece a la Capa de Lógica 
+// Se diseña intencionalmente 'pura' (sin cin/cout) para facilitar la reutilización 
+// del código en diferentes interfaces (consola, archivo, o futura GUI gráfica).
 bool registrarResultadoPartido(SistemaDeportivo* s, int idPartido, int ptsLocal, int ptsVisitante) {
     if (s == nullptr || ptsLocal < 0 || ptsVisitante < 0) return false;
     
