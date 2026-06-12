@@ -1,28 +1,43 @@
-# Sistema de Gestión de Torneos - Programación II
+🏆 Sistema de Gestión de Torneos Deportivos (URU)
+"Solución robusta para la administración eficiente de ligas y torneos."
 
-## 📝 Descripción
+📋 Descripción del Proyecto
+Este sistema ha sido diseñado como una herramienta de gestión integral para el Torneo URU. El software permite administrar de forma dinámica las tres entidades pilares de cualquier liga deportiva: Equipos, Jugadores y Partidos.
 
-Este programa permite llevar el control de un torneo deportivo en C++. Está enfocado en gestionar equipos, los jugadores que los integran y los partidos que se disputan, manteniendo las estadísticas y tablas de posiciones siempre actualizadas. 📈
+Desarrollado en C++, el proyecto prioriza la eficiencia en la gestión de memoria y la integridad de los datos, aplicando principios de Arquitectura de Software para asegurar que el sistema sea escalable y fácil de mantener.
 
-## 🚀 ¿Qué puede hacer el sistema?
+🛠️ Arquitectura Técnica
+El proyecto se basa en una Arquitectura de Tres Capas para separar responsabilidades:
 
-* **Equipos 🛡️:** Crear nuevos equipos, buscarlos por nombre (incluso si escribes solo una parte) y editar o eliminar información.
-* **Jugadores 🏃‍♂️:** Registrar jugadores con su cédula, dorsal y posición (Portero, Defensa, etc.). El sistema evita que se repita la cédula o que un jugador use un número de dorsal ya ocupado.
-* **Partidos 📅:** Programar encuentros entre equipos, registrar los marcadores finales y cancelar partidos si es necesario.
-* **Estadísticas 🏆:** El programa calcula automáticamente los puntos y victorias, ordenando la tabla de posiciones según las reglas del torneo.
+Capa de Datos (Modelos): Estructuras (struct) optimizadas para la gestión en el Heap.
 
-## ⚙️ Puntos clave del desarrollo
+Capa de Lógica: Funciones "puras" que manipulan el estado del torneo sin dependencias de entrada/salida.
 
-* **Memoria Dinámica 💾:** Usamos memoria dinámica para que el programa maneje los datos de forma eficiente según lo que necesites.
-* **Validaciones ✅:** Incluimos controles para evitar errores, como programar un equipo contra sí mismo o modificar partidos ya finalizados.
-* **Ordenamiento 🔢:** La tabla de posiciones se organiza automáticamente comparando puntos, diferencia de puntos y puntos a favor.
+Capa de Presentación: Interfaz de usuario intuitiva basada en menús interactivos y validaciones robustas.
 
-## 🛠️ Cómo compilar
+Diagrama de Relaciones
+🚀 Cómo Empezar
+Requisitos
+Compilador de C++ (GCC, Clang o MSVC).
 
-Para ejecutar el proyecto en tu máquina, abre una terminal en la carpeta del archivo y escribe:
+Compilación y Ejecución
+Clonar/Descargar el proyecto.
 
-```bash
-g++ Proyectoprog2.cpp -o torneo
-./torneo
-```
+Abrir la terminal en el directorio raíz.
 
+Compilar:
+
+Bash
+g++ Proyectoprog2.cpp -o SistemaTorneo
+Ejecutar:
+
+Bash
+./SistemaTorneo
+✨ Características Principales
+Gestión Dinámica de Memoria: Uso inteligente del Heap para redimensionar colecciones automáticamente ante el crecimiento del torneo.
+
+Algoritmo de Ordenamiento: Implementación propia de Bubble Sort con criterios jerárquicos: Puntos > Dif. Goles > Goles a Favor.
+
+Integridad Referencial: validaciones estrictas para evitar registros huérfanos y duplicados (IDs únicos, dorsales, cruces de partidos).
+
+Resiliencia: Manejo de errores en la entrada de datos (cin.fail()) para evitar comportamientos inesperados.
