@@ -9,7 +9,7 @@
 using namespace std;
 
 
-// 1. ESTRUCTURAS PARA PERSISTENCIA (sin punteros, con metadatos)
+// 1. ESTRUCTURAS PARA PERSISTENCIA (sin punteros)
 
 struct Torneo {
     char nombre[100];
@@ -99,7 +99,7 @@ const int MAX_RESULTADOS = 100;
 // 3. FUNCIONES DE GESTIÓN DE ARCHIVOS Y HEADERS
 
 
-// Crea el directorio "datos" si no existe (usando comando del sistema)
+// Crea el directorio "datos" si no existe
 void crearDirectorioDatos() {
 #ifdef _WIN32
     system("mkdir datos 2>nul");
