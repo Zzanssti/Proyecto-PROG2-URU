@@ -1,6 +1,7 @@
 #ifndef EQUIPO_HPP
 #define EQUIPO_HPP
 
+#include <cstddef>
 #include <ctime>
 #include <cstring>
 
@@ -117,12 +118,11 @@ public:
      */
     void mostrarCompleto() const;
 
-    //Metodo estatico
+    // Metodo estatico
     /**
       @brief Retorna el tamaño en bytes de la clase (para persistencia).
       @return sizeof(Equipo)
-    
+    */
     static size_t obtenerTamano();
-    **/
-}
+};
 #endif

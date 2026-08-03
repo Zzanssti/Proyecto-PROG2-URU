@@ -43,6 +43,10 @@ public:
     template <class T>
     static int buscarIndicePorID(const char* ruta, int id);
 
+    // Recorre todos los registros activos y ejecuta un callback por cada uno
+    template <class T, class Func>
+    static bool recorrerRegistros(const char* ruta, Func callback);
+
     // Obtiene el tamaño del registro (sizeof(T))
     template <class T>
     static size_t obtenerTamanoRegistro();
@@ -101,7 +105,7 @@ bool GestorArchivos::leerRegistroPorID(const char* ruta, int id, T& resultado) {
     // Retorna true si el objeto NO está eliminado.
     //'buscarIndicePorID' ya comprobo que no lo esta
     // pero es una doble verificacion de seguridad
-    return !resultado.isEliminado();
+    return !resultado.getEliminado();
 }
 
 template <class T>
@@ -253,6 +257,29 @@ int GestorArchivos::buscarIndicePorID(const char* ruta, int id) {
     
     in.close();
     return -1;
+}
+
+template <class T, class Func>
+bool GestorArchivos::recorrerRegistros(const char* ruta, Func callback) {
+    std::ifstream in(ruta, std::ios::binary);
+    if (!in) return false;
+
+    ArchivoHeader header;
+    in.read(reinterpret_cast<char*>(&header), sizeof(header));
+    if (in.fail()) { in.close(); return false; }
+
+    size_t tam = sizeof(T);
+    for (int i = 0; i < header.cantidadRegistros; ++i) {
+        T objeto;
+        in.read(reinterpret_cast<char*>(&objeto), tam);
+        if (in.fail()) break;
+        if (!objeto.getEliminado()) {
+            callback(objeto);
+        }
+    }
+
+    in.close();
+    return true;
 }
 
 template <class T>

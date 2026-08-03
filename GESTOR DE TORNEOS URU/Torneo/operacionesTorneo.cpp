@@ -17,8 +17,12 @@ bool leerTorneo(Torneo& torneo) {
     std::ifstream in("datos/torneo.bin", std::ios::binary);
     if (!in) return false;
     in.read(reinterpret_cast<char*>(&torneo), sizeof(Torneo));
+    if (!in || in.gcount() != static_cast<std::streamsize>(sizeof(Torneo))) {
+        in.close();
+        return false;
+    }
     in.close();
-    return (in.good()); // Si la lectura fue exitosa
+    return true;
 }
 
 bool existeTorneo() {

@@ -1,6 +1,8 @@
 #ifndef GOL_HPP
 #define GOL_HPP
 
+#include <cstddef>
+
 class Gol {
 private:
     int idJugador;   // ID del jugador que anotó (0 si autogol o desconocido)

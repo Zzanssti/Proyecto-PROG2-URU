@@ -1,6 +1,7 @@
 #ifndef JUGADOR_HPP
 #define JUGADOR_HPP
 
+#include <cstddef>
 #include <ctime>
 #include <cstring>
 

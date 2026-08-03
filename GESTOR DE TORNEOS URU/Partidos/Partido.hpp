@@ -1,6 +1,7 @@
 #ifndef PARTIDO_HPP
 #define PARTIDO_HPP
 
+#include <cstddef>
 #include <ctime>
 #include <cstring>
 #include "Gol.hpp"

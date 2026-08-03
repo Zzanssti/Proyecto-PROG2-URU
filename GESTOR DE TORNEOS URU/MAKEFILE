@@ -1,0 +1,48 @@
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall -I.
+
+# Directorios
+SRC_DIR = .
+EQUIPOS_DIR = Equipos
+JUGADORES_DIR = Jugadores
+PARTIDOS_DIR = Partidos
+TORNEO_DIR = Torneo
+PERSISTENCIA_DIR = Persistencia
+UTILIDADES_DIR = Utilidades
+INTERFAZ_DIR = Interfaz
+
+# Archivos fuente
+SRC = main.cpp \
+      $(EQUIPOS_DIR)/Equipo.cpp \
+      $(EQUIPOS_DIR)/operacionesEquipos.cpp \
+      $(JUGADORES_DIR)/Jugador.cpp \
+      $(JUGADORES_DIR)/operacionesJugadores.cpp \
+      $(PARTIDOS_DIR)/Gol.cpp \
+      $(PARTIDOS_DIR)/partidos.cpp \
+      $(PARTIDOS_DIR)/operacionesPartidos.cpp \
+      $(TORNEO_DIR)/Torneo.cpp \
+      $(TORNEO_DIR)/operacionesTorneo.cpp \
+      $(PERSISTENCIA_DIR)/GestorArchivos.cpp \
+      $(UTILIDADES_DIR)/Formatos.cpp \
+      $(UTILIDADES_DIR)/Validaciones.cpp \
+      $(INTERFAZ_DIR)/Interfaz.cpp
+
+OBJ = $(SRC:.cpp=.o)
+
+TARGET = torneo
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJ) $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean run
