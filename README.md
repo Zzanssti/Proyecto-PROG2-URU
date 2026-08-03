@@ -738,7 +738,7 @@ bool crearBackup() {
 ## 👥 Autores y Contribuciones
 
 ### Autor Principal
-- **Estudiante:** Eliecer Martinez
+- **Estudiante:** Santiago Torrealba
 - **Asignatura:** Programación 2
 - **Profesor:** Ing. Victor Kneider
 - **Universidad:** Universidad Rafael Urdaneta
